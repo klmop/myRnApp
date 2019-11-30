@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Button, FlatList } from 'react-native';
+import { StyleSheet, View, Button, FlatList, Text, TextInput } from 'react-native';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
 import GoalItem from './component/GoalItem';
@@ -11,16 +11,22 @@ import SignUp from './component/navigation/SignUp';
 
 let resetHouzzeApp = false;
 function App(props) {
+  const [stepGoal, setStepGoal] = useState('');
   const [stepGoals, setStepGoals] = useState([]);
   const [isAddMode, setIsAddMode] = useState(false);
   const [isTinderHouseMode, setIsTinderHouseMode] = useState(false);
   // const [resetHouzzeApp, setResetHouzzeApp] = useState(false);
   // let resetHouzzeApp = false;
   console.log('App : resetHouzzeApp Just set : ', resetHouzzeApp)
-  const addGoalHandler = goalName => {
-    console.log('App : New ID', Math.round(Math.random() * 100000000000).toString())
-    setStepGoals(stepGoals => [...stepGoals, {key: Math.round(Math.random() * 100000000000).toString(), value: goalName}]);
-    setIsAddMode(false);
+  const addGoalHandler = () => {
+    console.log('App : New ID', Math.round(Math.random() * 100000000000).toString(), ' : value = ', stepGoal)
+    setStepGoals(stepGoals => [...stepGoals, {key: Math.round(Math.random() * 100000000000).toString(), value: stepGoal}]);
+    // setStepGoals(stepGoals => [...stepGoals, stepGoal]);
+    setIsAddMode(false);    
+  };
+  const textGoalHandler = tempName => {
+    console.log('App : entering...', ' : value = ', tempName);
+    setStepGoal(tempName);
   };
 
   const cancelAddGoal = () => {
@@ -30,7 +36,7 @@ function App(props) {
   
   const removeStepGoal = goalId => {
     console.log('App : Delete Id = ', goalId)
-    setStepGoals(stepGoals => {
+    setStepGoals(stepGoals => { 
       return stepGoals.filter((goal) => goal.key !== goalId);
     });
   }
@@ -42,15 +48,18 @@ console.log('App : ResetHouzz : ', resetHouzzeApp)
 // <Button title="Reset Houzze App!" onPress={() => { resetHouzzeApp = true}}/>
   return (
     <View style={styles.screen} >
-          <View style={styles.button}>
-            <Button title="Ajouter" onPress={addGoalHandler} ></Button>
-          </View>
-          <View style={styles.button}>
-            <Button title="Annuler" onPress={props.onCancelAddGoal} color="red" ></Button>
-          </View>
-          <View style={styles.button}>
-            <Button title="Signn" onPress={() => props.navigation.navigate('signIn')} color="red" ></Button>
-          </View>
+      <View style={styles.inputContainer} >
+        <TextInput placeHolder="Course Goal" style={styles.input}  onChangeText={textGoalHandler} value={stepGoal} />
+        <Button title="Ajouter" onPress={addGoalHandler} ></Button>
+      </View>
+      <View >
+        {stepGoals.map((goal) => {return(
+          <View  style={styles.listItem} >
+            <Text key={goal.key} >{goal.key} </Text>
+          </View>)
+        })
+        }
+      </View>
     </View>
     );
 
@@ -60,6 +69,7 @@ console.log('App : ResetHouzz : ', resetHouzzeApp)
     app: App,
     signIn: SignIn,
     signUp: SignUp,
+    tinderHouse: TinderHouse,
   },
   {
     initialRouteName: 'app',
@@ -70,9 +80,24 @@ console.log('App : ResetHouzz : ', resetHouzzeApp)
 
   const styles = StyleSheet.create({
     screen: {
-      padding: 50
+      padding: 50,
     },
-    button: {
-      borderRadius: 0.6,
+    inputContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    input: {
+      width: '80%',
+      borderRadius: 0.5,
+      borderColor: 'black',
+      borderWidth: 1,
+      padding: 10,
+    },
+    listItem: {
+      padding: 10,
+      backgroundColor: '#CCC',
+      borderColor: 'black',
+      borderWidth: 1,
     }
   });
